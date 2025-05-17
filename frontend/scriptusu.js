@@ -1,30 +1,27 @@
-function guardar(){
- 
-    let apellidos='';
-    let datoingresado = document.getElementById("correo").value;
- 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    event.preventDefault();
- 
-    let raw = JSON.stringify({
-      "dni": document.getElementById("dni").value,
-      "nombre": document.getElementById("nombre").value,
-      "apellidos": document.getElementById("apellidos").value,
-      "email": document.getElementById("correo").value
-    });
- 
-    let requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow"
-    };
- 
-    fetch("https://ambar-main.netlify.app/.netlify/functions/usuarios", requestOptions)
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-      .catch((error) => console.error(error));
+function guardar(event) {
+  event.preventDefault();
+
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  let raw = JSON.stringify({
+    dni: document.getElementById("dni").value,
+    nombre: document.getElementById("nombre").value,
+    apellidos: document.getElementById("apellidos").value,
+    email: document.getElementById("correo").value
+  });
+
+  let requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow"
+  };
+
+  fetch("https://ambar-main.netlify.app/.netlify/functions/usuarios", requestOptions)
+    .then((response) => response.text())
+    .then((result) => console.log(result))
+    .catch((error) => console.error(error));
 }
  
 function cargar(resultado){
