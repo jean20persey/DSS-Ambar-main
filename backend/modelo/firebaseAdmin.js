@@ -1,5 +1,5 @@
 const admin = require('firebase-admin');
- 
+
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert({
@@ -9,5 +9,8 @@ if (!admin.apps.length) {
     }),
   });
 }
- 
+
+// Configurar Firestore para ignorar propiedades undefined
+admin.firestore().settings({ ignoreUndefinedProperties: true });
+
 module.exports = admin;
