@@ -24,6 +24,7 @@ class UsuariosController{
  
     async ingresar(req,res){
         try{
+            console.log("Datos recibidos en backend:", req.body);
             const admin = require('./firebaseAdmin');
             /*
             const {dni,nombre,apellidos,email} = req.body;
