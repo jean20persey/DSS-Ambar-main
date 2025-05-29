@@ -1,44 +1,68 @@
-class UsuariosController{
-    construct(){
-    }
- 
-     async consultarDetalle(req,res){
- 
-        try{
-            const admin = require('./firebaseAdmin');
-            let iden = req.query.iden;
-            const userDoc = await admin.firestore().collection('users').doc(iden).get();
- 
-            if (!userDoc.exists) {
-                return res.status(404).json({ error: 'Usuario no encontrado:' + iden  });
-            }
- 
-            // Obtener los datos del documento
-            const userData = userDoc.data();
- 
-            return res.status(200).json(userData);
-        }catch (err){
-            res.status(500).send(err.message);
+class UsuariosController {
+    constructor() {
+        // Inicializar Firebase Admin al crear la instancia
+        try {
+            this.admin = require('./firebaseAdmin');
+        } catch (error) {
+            console.error('Error al inicializar Firebase Admin:', error);
+            throw error;
         }
-     }
- 
-    async ingresar(req,res){
-        try{
-            const admin = require('./firebaseAdmin');
-            /*
-            const {dni,nombre,apellidos,email} = req.body;
-            console.log ("Documento de identidad:... " + dni);
-            console.log ("Nombres con apellidos:" + nombre + " " + apellidos);
-            console.log ("email: "+ email);
-            */
-            //Asignando nombre del documento
-            //const docRef = await admin.firestore().collection('users').doc("user654").set(req.body);
-            //Adicionando con nombre de documento asignado dinámicamente
-            const docRef = await admin.firestore().collection('users').add(req.body);
-            res.status(200).send ("Usuario agregado");
-        }catch (err){
-            res.status(500).send(err.message);
+    }
+
+    async consultarDetalle(req, res) {
+        try {
+            let iden = req.query.iden;
+            if (!iden) {
+                return res.status(400).json({ error: 'Se requiere el parámetro iden' });
+            }
+
+            const userDoc = await this.admin.firestore().collection('users').doc(iden).get();
+
+            if (!userDoc.exists) {
+                return res.status(404).json({ error: 'Usuario no encontrado: ' + iden });
+            }
+
+            const userData = userDoc.data();
+            return res.status(200).json(userData);
+        } catch (err) {
+            console.error('Error al consultar usuario:', err);
+            res.status(500).json({ error: 'Error interno del servidor: ' + err.message });
+        }
+    }
+
+    async ingresar(req, res) {
+        try {
+            // Validar que todos los campos requeridos estén presentes
+            const { dni, nombre, apellidos, email } = req.body;
+            if (!dni || !nombre || !apellidos || !email) {
+                return res.status(400).json({ 
+                    error: 'Faltan campos requeridos',
+                    required: ['dni', 'nombre', 'apellidos', 'email'],
+                    received: req.body
+                });
+            }
+
+            // Usar el DNI como ID del documento
+            const docRef = await this.admin.firestore()
+                .collection('users')
+                .doc(dni)
+                .set({
+                    dni,
+                    nombre,
+                    apellidos,
+                    email,
+                    createdAt: this.admin.firestore.FieldValue.serverTimestamp()
+                });
+
+            res.status(200).json({ 
+                message: "Usuario agregado exitosamente",
+                userId: dni
+            });
+        } catch (err) {
+            console.error('Error al crear usuario:', err);
+            res.status(500).json({ error: 'Error interno del servidor: ' + err.message });
         }
     }
 }
+
 module.exports = new UsuariosController();
