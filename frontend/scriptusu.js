@@ -68,10 +68,17 @@ function cargar(resultado){
         let transformado = JSON.parse(resultado);
         var salida = "";
 
-        for (const [clave, valor] of Object.entries(transformado)) {
-            salida = `${clave}: ${valor}<br>${salida}`;
+        if (!transformado || Object.keys(transformado).length === 0) {
+            document.getElementById("rta").innerHTML = 'No se encontraron datos para este usuario';
+            return;
         }
-        document.getElementById("rta").innerHTML = salida || 'No se encontraron datos';
+
+        for (const [clave, valor] of Object.entries(transformado)) {
+            if (valor !== null && valor !== undefined) {
+                salida = `${clave}: ${valor}<br>${salida}`;
+            }
+        }
+        document.getElementById("rta").innerHTML = salida;
     } catch (error) {
         console.error('Error al procesar los datos:', error);
         document.getElementById("rta").innerHTML = 'Error al procesar los datos';
@@ -95,14 +102,32 @@ function listar(event){
         }
     };
 
-    fetch("https://dss-ambar-main.netlify.app/.netlify/functions/usuarios/" + ndoc, requestOptions)
+    // Mostrar mensaje de carga
+    document.getElementById("rta").innerHTML = 'Buscando usuario...';
+
+    fetch(`https://dss-ambar-main.netlify.app/.netlify/functions/usuarios/${ndoc}`, requestOptions)
         .then(response => {
             if (!response.ok) {
-                throw new Error(response.status === 404 ? 'Usuario no encontrado' : 'Error al buscar usuario');
+                if (response.status === 404) {
+                    throw new Error('Usuario no encontrado');
+                }
+                throw new Error('Error al buscar usuario');
             }
-            return response.text();
+            return response.json();
         })
-        .then(result => cargar(result))
+        .then(result => {
+            if (!result) {
+                document.getElementById("rta").innerHTML = 'No se encontró el usuario';
+                return;
+            }
+            let salida = '';
+            for (const [clave, valor] of Object.entries(result)) {
+                if (valor !== null && valor !== undefined) {
+                    salida += `<strong>${clave}:</strong> ${valor}<br>`;
+                }
+            }
+            document.getElementById("rta").innerHTML = salida || 'No hay datos disponibles';
+        })
         .catch(error => {
             console.error('Error:', error);
             document.getElementById("rta").innerHTML = 'Error: ' + error.message;

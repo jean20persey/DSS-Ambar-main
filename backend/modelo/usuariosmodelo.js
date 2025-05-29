@@ -11,18 +11,24 @@ class UsuariosController {
 
     async consultarDetalle(req, res) {
         try {
-            let iden = req.query.iden;
+            // Obtener el ID del usuario de los parámetros de ruta o query
+            const iden = req.params.iden || req.query.iden;
+
             if (!iden) {
-                return res.status(400).json({ error: 'Se requiere el parámetro iden' });
+                return res.status(400).json({ error: 'Se requiere el ID del usuario' });
             }
+
+            console.log('Buscando usuario con ID:', iden);
 
             const userDoc = await this.admin.firestore().collection('users').doc(iden).get();
 
             if (!userDoc.exists) {
-                return res.status(404).json({ error: 'Usuario no encontrado: ' + iden });
+                console.log('Usuario no encontrado:', iden);
+                return res.status(404).json({ error: 'Usuario no encontrado' });
             }
 
             const userData = userDoc.data();
+            console.log('Usuario encontrado:', userData);
             return res.status(200).json(userData);
         } catch (err) {
             console.error('Error al consultar usuario:', err);
@@ -42,8 +48,20 @@ class UsuariosController {
                 });
             }
 
-            // Usar el DNI como ID del documento
-            const docRef = await this.admin.firestore()
+            // Verificar si el usuario ya existe
+            const existingUser = await this.admin.firestore()
+                .collection('users')
+                .doc(dni)
+                .get();
+
+            if (existingUser.exists) {
+                return res.status(400).json({ 
+                    error: 'Ya existe un usuario con este DNI'
+                });
+            }
+
+            // Crear el nuevo usuario
+            await this.admin.firestore()
                 .collection('users')
                 .doc(dni)
                 .set({
