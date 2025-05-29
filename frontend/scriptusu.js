@@ -21,7 +21,7 @@ function guardar(){
       redirect: "follow"
     };
  
-    fetch("https://dss-ambar-main.netlify.app/.netlify/functions/usuarios/usuarios", requestOptions)
+    fetch("https://dss-ambar-main.netlify.app/.netlify/functions/usuarios", requestOptions)
       .then((response) => response.text())
       .then((result) => console.log(result))
       .catch((error) => console.error(error));
