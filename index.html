@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gestión de Usuarios</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Usuarios</title>
     <script type="text/javascript" src="./frontend/scriptusu.js"></script>
     <style>
         body {
@@ -10,11 +11,19 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-        }
-        form {
             background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
             padding: 20px;
-            border-radius: 5px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
             margin-bottom: 20px;
         }
         .form-group {
@@ -24,12 +33,21 @@
             display: inline-block;
             width: 150px;
             margin-bottom: 5px;
+            color: #666;
         }
-        input[type="text"] {
+        input[type="text"],
+        input[type="email"] {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             width: 250px;
+            font-size: 14px;
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 5px rgba(76,175,80,0.2);
         }
         input[type="submit"] {
             background-color: #4CAF50;
@@ -38,48 +56,75 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
         }
         input[type="submit"]:hover {
             background-color: #45a049;
         }
         #rta {
-            margin-top: 10px;
-            padding: 10px;
+            margin-top: 15px;
+            padding: 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            background-color: #fff;
+            min-height: 50px;
+        }
+        .error {
+            color: #d32f2f;
+            background-color: #ffebee;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
+        }
+        .success {
+            color: #388e3c;
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <h1>Adicionar Usuario</h1>
-    <form id="adicionarEstudiante" onsubmit="guardar(event)">
-        <div class="form-group">
-            <label for="dni">Documento de identidad:</label>
-            <input type="text" id="dni" required>
-        </div>
-        <div class="form-group">
-            <label for="nombre">Nombres:</label>
-            <input type="text" id="nombre" required>
-        </div>
-        <div class="form-group">
-            <label for="apellidos">Apellidos:</label>
-            <input type="text" id="apellidos" required>
-        </div>
-        <div class="form-group">
-            <label for="correo">Email:</label>
-            <input type="email" id="correo" required>
-        </div>
-        <input type="submit" value="Aceptar">
-    </form>
+    <div class="container">
+        <h1>Adicionar Usuario</h1>
+        <form id="adicionarEstudiante" onsubmit="guardar(event)">
+            <div class="form-group">
+                <label for="dni">Documento de identidad:</label>
+                <input type="text" id="dni" required pattern="[0-9]+" title="Por favor ingrese solo números">
+            </div>
+            <div class="form-group">
+                <label for="nombre">Nombres:</label>
+                <input type="text" id="nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="apellidos">Apellidos:</label>
+                <input type="text" id="apellidos" required>
+            </div>
+            <div class="form-group">
+                <label for="correo">Email:</label>
+                <input type="email" id="correo" required>
+            </div>
+            <div class="error" id="errorMessage"></div>
+            <div class="success" id="successMessage"></div>
+            <input type="submit" value="Guardar Usuario">
+        </form>
+    </div>
 
-    <h1>Listar un usuario</h1>
-    <form id="listarEstudiantes" onsubmit="listar(event)">
-        <div class="form-group">
-            <label for="numdoc">Número de documento:</label>
-            <input type="text" id="numdoc" required>
-        </div>
-        <input type="submit" value="Buscar">
-        <div id="rta">Resultado:</div>
-    </form>
+    <div class="container">
+        <h1>Listar un usuario</h1>
+        <form id="listarEstudiantes" onsubmit="listar(event)">
+            <div class="form-group">
+                <label for="numdoc">Número de documento:</label>
+                <input type="text" id="numdoc" required pattern="[0-9]+" title="Por favor ingrese solo números">
+            </div>
+            <input type="submit" value="Buscar Usuario">
+            <div id="rta">Los resultados se mostrarán aquí...</div>
+        </form>
+    </div>
 </body>
+</html>
 </html>
